@@ -65,17 +65,56 @@ def parse_gpt_output(raw_input):
     original_close_tag = "</span>"
     new_open_tag = get_new_open_tag(num_edits)
     new_close_tag = "</span>"
-    while True:
-        temp = raw_input
-        raw_input = raw_input.replace("$[", original_open_tag, 1)
-        raw_input = raw_input.replace("]$", original_close_tag, 1)
-        raw_input = raw_input.replace("#[", new_open_tag, 1)
-        raw_input = raw_input.replace("]#", new_close_tag, 1)
-        num_edits += 1
-        original_open_tag = get_open_tag(num_edits)
-        new_open_tag = get_new_open_tag(num_edits)
-        if temp == raw_input:
-            break
+
+    # while True:
+    #     temp = raw_input
+    #     raw_input = raw_input.replace("$[", original_open_tag, 1)
+    #     raw_input = raw_input.replace("]$", original_close_tag, 1)
+    #     raw_input = raw_input.replace("#[", new_open_tag, 1)
+    #     raw_input = raw_input.replace("]#", new_close_tag, 1)
+    #     num_edits += 1
+    #     original_open_tag = get_open_tag(num_edits)
+    #     new_open_tag = get_new_open_tag(num_edits)
+    #     if temp == raw_input:
+    #         break
+
+    # i = 0
+    # while i < len(raw_input) - 2:
+    #     if raw_input[i:i+2] == "$[":
+    #         raw_input = raw_input[0:i] + original_open_tag + raw_input[i+len(original_open_tag):]
+    #     elif raw_input[i:i+2] == "]$":
+    #         raw_input = raw_input[0:i] + original_close_tag + raw_input[i+len(original_close_tag):]
+    #     elif raw_input[i:i+2] == "#[":
+    #         raw_input = raw_input[0:i] + new_open_tag + raw_input[i+len(new_open_tag):]
+    #     elif raw_input[i:i+2] == "[#":
+    #         raw_input = raw_input[0:i] + new_close_tag + raw_input[i+len(new_close_tag):]
+    #         num_edits += 1
+    #         original_open_tag = get_open_tag(num_edits)
+    #         new_open_tag = get_new_open_tag(num_edits)
+    #     i += 1
+
+    output = ""
+    i = 0
+    while i < len(raw_input) - 2:
+        if raw_input[i:i+2] == "$[":
+            output += original_open_tag
+            i += 2
+        elif raw_input[i:i+2] == "]$":
+            output += original_close_tag
+            i += 2
+        elif raw_input[i:i+2] == "#[":
+            output += new_open_tag
+            i += 2
+        elif raw_input[i:i+2] == "[#":
+            output += new_close_tag
+            num_edits += 1
+            i += 2
+            original_open_tag = get_open_tag(num_edits)
+            new_open_tag = get_new_open_tag(num_edits)
+        else:
+            output += raw_input[i]
+            i += 1
+
     return raw_input
 
 def generate_quiz_topics(company_id, documents, embeddings):
