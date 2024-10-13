@@ -25,7 +25,7 @@ export default function Document() {
       <div className="bg-white border-b px-4 py-2 flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-blue-500 rounded-sm"></div>
-          <span className="font-semibold">Untitled document</span>
+          <span className="font-semibold"><Input placeholder='Title' defualtValue='Untitled document'/></span>
         </div>
         <nav className="hidden md:flex space-x-4">
           {['File', 'Edit', 'View', 'Insert', 'Format', 'Tools'].map((item) => (
@@ -46,7 +46,7 @@ export default function Document() {
         <select className="border rounded px-2 py-1 text-sm">
           <option>Arial</option>
         </select>
-        <Input type="number" className="w-12 text-sm" defaultValue="11" />
+        <Input type="number" className="w-16 text-sm" defaultValue="18" />
         <Button variant="ghost" size="icon"><Bold className="h-4 w-4" /></Button>
         <Button variant="ghost" size="icon"><Italic className="h-4 w-4" /></Button>
         <Button variant="ghost" size="icon"><Underline className="h-4 w-4" /></Button>
@@ -72,7 +72,7 @@ export default function Document() {
         {/* Document area */}
         <div className="flex-grow p-4">
           <Textarea 
-            className="w-full h-full resize-none border-0 focus:ring-0" 
+            className="w-full h-full resize-none border-0 focus:ring-0 p-12 text-lg" 
             placeholder="Type your document here..."
           />
         </div>
