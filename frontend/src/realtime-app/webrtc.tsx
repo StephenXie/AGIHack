@@ -5,7 +5,7 @@ import { Button } from "../components/button";
 import { MeetingLayout } from "../components/meeting-layout";
 import { TRealtimeAppContext } from "./types";
 import { useOutletContext } from "react-router-dom";
-import { ConsoleLogger } from "@outspeed/core";
+import { ConsoleLogger, DataChannel, isMessageEvent } from "@outspeed/core";
 import Document from "./document.tsx";
 
 export function WebRTCRealtimeApp() {
@@ -41,7 +41,48 @@ export function WebRTCRealtimeApp() {
         variant: "destructive",
       });
     }
+
   }, [connectionStatus, connect, onDisconnect, config]);
+
+  React.useEffect(() => {
+    const onMessage = (evt: unknown) => {
+      if (!isMessageEvent(evt)) {
+        return;
+      }
+
+      if (typeof evt.data !== "string") {
+        return;
+      }
+
+      try {
+        const message = JSON.parse(evt.data);
+
+        // if (message.render) {
+        //   toast({
+        //     title: "New Message",
+        //     description: (
+        //       <div dangerouslySetInnerHTML={{ __html: message.render }} />
+        //     ),
+        //   });
+        // }
+
+        console.log(message);
+        // window.alert(message.content || message.text);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (dataChannel != null) {
+      dataChannel.addEventListener("message", onMessage);
+    }
+    return () => {
+      if (dataChannel != null) {      
+        dataChannel.removeEventListener("message", onMessage);
+      }
+    };
+  }, [dataChannel, toast]);
 
   function handleDisconnect() {
     if (connectionStatus === "Connected") {
