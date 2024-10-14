@@ -11,12 +11,12 @@ load_dotenv()
 def generate_edits(text, tone):
     llm = ChatOpenAI(
         model="gpt-4o-mini",
-        temperature=0.5,
+        temperature=0.2,
         max_tokens=1024,
         timeout=None,
         max_retries=2,
     )
-    prompt = "You are an editor at a publishing company. You are reviewing a manuscript and you need to make several edits to improve the writing. Surround the original text with '$[' and ']$' and the new text with '#[' and ']#'."
+    prompt = "You are an professional editor. You are reviewing a manuscript and you need to make several edits to improve the writing, but do not add anything to the text. Surround the original text with '$[' and ']$' and the new text with '#[' and ']#'.\n"
     examples = [{
             "Q": "Good morning! Me and him went to the store.",
             "A": "Good morning! $[Me and him]$#[He and I]# went to the store.",
@@ -42,7 +42,6 @@ tone_settings = {
     "Professional": "Use a professional tone, keeping the language clear, respectful, and concise.",
     "Casual": "Keep the tone light, friendly, and conversational.",
     "Persuasive": "Motivate the reader to take action, using strong language and compelling arguments.",
-    "Empathetic": "Show understanding and compassion, using a warm and supportive tone.",
     "Excited": "Use a highly energetic and enthusiastic tone.",
     "None": ""
 }
@@ -54,10 +53,10 @@ class EditRecommendationModel(BaseModel):
 
 
 def get_open_tag(id):
-    return f"<span style='color: rgb(127 29 29);	background-color: rgb(252 165 165); text-decoration-line: line-through;' id='{id}'>"
+    return f"<span style='color: rgb(127 29 29);	background-color: rgb(252 165 165); text-decoration-line: line-through;' id='{id}o'>"
 
 def get_new_open_tag(id):
-    return f"<span style='color: rgb(20 83 45); 	background-color: rgb(134 239 172);' id='{id}'>"
+    return f"<span style='color: rgb(20 83 45); 	background-color: rgb(134 239 172);' id='{id}n'>"
 
 def parse_gpt_output(raw_input):
     num_edits = 1
@@ -105,7 +104,7 @@ def parse_gpt_output(raw_input):
         elif raw_input[i:i+2] == "#[":
             output += new_open_tag
             i += 2
-        elif raw_input[i:i+2] == "[#":
+        elif raw_input[i:i+2] == "]#":
             output += new_close_tag
             num_edits += 1
             i += 2
@@ -115,7 +114,7 @@ def parse_gpt_output(raw_input):
             output += raw_input[i]
             i += 1
 
-    return raw_input
+    return output
 
 def generate_quiz_topics(company_id, documents, embeddings):
     llm = ChatOpenAI(
