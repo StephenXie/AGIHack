@@ -12,7 +12,6 @@ def generate_edits(text, tone):
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0.2,
-        max_tokens=1024,
         timeout=None,
         max_retries=2,
     )
@@ -64,34 +63,6 @@ def parse_gpt_output(raw_input):
     original_close_tag = "</span>"
     new_open_tag = get_new_open_tag(num_edits)
     new_close_tag = "</span>"
-
-    # while True:
-    #     temp = raw_input
-    #     raw_input = raw_input.replace("$[", original_open_tag, 1)
-    #     raw_input = raw_input.replace("]$", original_close_tag, 1)
-    #     raw_input = raw_input.replace("#[", new_open_tag, 1)
-    #     raw_input = raw_input.replace("]#", new_close_tag, 1)
-    #     num_edits += 1
-    #     original_open_tag = get_open_tag(num_edits)
-    #     new_open_tag = get_new_open_tag(num_edits)
-    #     if temp == raw_input:
-    #         break
-
-    # i = 0
-    # while i < len(raw_input) - 2:
-    #     if raw_input[i:i+2] == "$[":
-    #         raw_input = raw_input[0:i] + original_open_tag + raw_input[i+len(original_open_tag):]
-    #     elif raw_input[i:i+2] == "]$":
-    #         raw_input = raw_input[0:i] + original_close_tag + raw_input[i+len(original_close_tag):]
-    #     elif raw_input[i:i+2] == "#[":
-    #         raw_input = raw_input[0:i] + new_open_tag + raw_input[i+len(new_open_tag):]
-    #     elif raw_input[i:i+2] == "[#":
-    #         raw_input = raw_input[0:i] + new_close_tag + raw_input[i+len(new_close_tag):]
-    #         num_edits += 1
-    #         original_open_tag = get_open_tag(num_edits)
-    #         new_open_tag = get_new_open_tag(num_edits)
-    #     i += 1
-
     output = ""
     i = 0
     while i < len(raw_input) - 2:
@@ -116,60 +87,8 @@ def parse_gpt_output(raw_input):
 
     return output
 
-def generate_quiz_topics(company_id, documents, embeddings):
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0.5,
-        max_tokens=1024,
-        timeout=None,
-        max_retries=2,
-    )
-    vo = voyageai.Client()
-    prompt = f"You are an HR manager at {company_id} and you need to create a quiz to test the employees' understanding of their employee financial benefits. You decide to brainstorm a list of topics to quiz the employees on."
-    details = vo.rerank(
-        "Financial & Retirement", documents, model="rerank-2-lite", top_k=3
-    ).results
-    prompt += "Here are some details about the company's employee benefits: \n"
-    for detail in details:
-        prompt += detail.document + "\n"
-    prompt += "Based on these company-specific information, you came up with these 5 topics about financial benefits: \n"
-    structured_llm = llm.with_structured_output(QuizTopics)
-    result = structured_llm.invoke(prompt)
-    print(result)
-    return format_llm_output(result)
 
 
-def generate_multiple_choice_question(company_id, topic, documents, embeddings):
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0.5,
-        max_tokens=1024,
-        timeout=None,
-        max_retries=2,
-    )
-    vo = voyageai.Client()
-    prompt = f"You are an HR manager at {company_id} and you need to create a quiz to test the employees' understanding of their employee financial benefits, specifically about {topic}. You decide to create a multiple choice question to test their knowledge."
-    details = vo.rerank(
-        "Financial & Retirement", documents, model="rerank-2-lite", top_k=3
-    ).results
-    prompt += f"Here are some details about {topic} at {company_id}: \n"
-    for detail in details:
-        prompt += detail.document + "\n"
-    prompt += "Based on these company-specific information, you came up with this multiple choice question: \n"
-    structured_llm = llm.with_structured_output(MCQModel)
-    result = structured_llm.invoke(prompt)
-    return format_llm_output(result)
-
-
-def make_questions(company_id):
-    documents, embeddings = load_to_voyage(company_id)
-    topics = generate_quiz_topics(company_id, documents, embeddings)
-    questions = {}
-    for topic in topics["Topics"]:
-        questions[topic] = generate_multiple_choice_question(
-            company_id, topic, documents, embeddings
-        )
-    return questions
 
 
 def format_llm_output(output):

@@ -184,6 +184,9 @@ export default function Component() {
 
   const handleInput = () => {
     if (editorRef.current) {
+      if (editorRef.current.textContent?.trim() === "") {
+        setSuggestions(new Map<string, string[]>());
+      }
       updateHtml(
         isHtmlMode
           ? editorRef.current.textContent || ""
