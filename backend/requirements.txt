@@ -38,7 +38,7 @@ flatbuffers==24.3.25
 frozenlist==1.4.1
 fsspec==2024.9.0
 future==1.0.0
-google-ai-generativelanguage==0.6.6
+google-ai-generativelanguage
 google-api-core==2.21.0
 google-api-python-client==2.149.0
 google-auth==2.35.0
@@ -47,9 +47,9 @@ google-crc32c==1.6.0
 google-generativeai==0.7.2
 googleapis-common-protos==1.65.0
 greenlet==3.1.1
-grpcio==1.66.2
-grpcio-status==1.62.3
-grpcio-tools==1.66.2
+grpcio
+grpcio-status
+grpcio-tools
 h11==0.14.0
 h2==4.1.0
 hpack==4.0.0
@@ -114,7 +114,7 @@ pinecone-plugin-interface==0.0.7
 portalocker==2.10.1
 posthog==3.6.6
 proto-plus==1.24.0
-protobuf==4.25.5
+protobuf
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
